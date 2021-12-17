@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="row">
+    <div class="text-box">
+        Sometimes you miss out on enrolling in that class that's just
+        perfect for you: late enough so you don't need 5 cups of coffee
+        to survive it but early enough so you can still grab a kebab box
+        from the Quad for lunch right afterwards. <br><br>Or maybe you just
+        don't like climbing the Basser steps to get to your tute room.<br><br>
+        With Tutorifull you can sign up to be alerted by email, SMS
+        or Yo when a spot opens up in a full class.<br><br>
+        Never settle for an 9am tute again.
+    </div>
+</div>
+
+<br>
+
+<div class="row">
+    <div class="warning-text-box">
+        This tool is unmaintained. If you like the concept you could try asking
+        CSESoc Webmin (or whatever they're called now) to see if they'd be
+        interested in taking over running and maintaining it.
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script async type="text/javascript" src={{ asset_url('js/tutorifull.min.js') }}></script>
+{% endblock %}

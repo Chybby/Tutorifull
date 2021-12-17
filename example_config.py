@@ -13,6 +13,7 @@ SUB_DOMAIN_NAME = 'test'  # sub domain name hosting the site
 FULL_DOMAIN_NAME = SUB_DOMAIN_NAME + '.' + \
     BASE_DOMAIN_NAME  # full domain name hosting the site
 DISABLED = True  # Whether to show the enabled or disabled homepage
+UNMAINTAINED = False  # Whether to show the unmaintained homepage
 MAILGUN_DOMAIN_NAME = 'mg.example.com'  # domain for sending mailgun emails
 YO_API_KEY = 'example YO api key'  # YO api key
 MAILGUN_API_KEY = 'example Mailgun api key'  # Mailgun api key

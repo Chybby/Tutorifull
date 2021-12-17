@@ -5,7 +5,7 @@ import os
 import re
 
 import flask_assetrev
-from config import DISABLED, SENTRY_DSN
+from config import DISABLED, SENTRY_DSN, UNMAINTAINED
 from constants import (
     CONTACT_TYPE_EMAIL,
     CONTACT_TYPE_SMS,
@@ -49,6 +49,9 @@ def homepage():
     def add_header(response):
         response.cache_control.no_store = True
         return response
+
+    if UNMAINTAINED:
+        return render_template('homepage_unmaintained.html')
 
     if DISABLED:
         return render_template('homepage_disabled.html')
