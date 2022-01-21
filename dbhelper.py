@@ -1,5 +1,3 @@
-from __future__ import absolute_import, print_function
-
 from config import DATABASE, REDIS_PORT
 from flask import g
 from redis import StrictRedis

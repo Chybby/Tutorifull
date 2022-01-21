@@ -1,10 +1,14 @@
-from __future__ import absolute_import, print_function
-
 import json
 import os
 import re
 
-import flask_assetrev
+from flask_cachecontrol import (
+    FlaskCacheControl,
+    cache,
+    dont_cache)
+
+from rev_assets import RevAssets
+
 from config import DISABLED, SENTRY_DSN, UNMAINTAINED
 from constants import (
     CONTACT_TYPE_EMAIL,
@@ -24,18 +28,17 @@ from util import (
     validate_course_id,
 )
 
+
 app = Flask(__name__)
 app.config.from_object('config')
-flask_assetrev.AssetRev(app)
+
+rev = RevAssets(reload=app.config['DEBUG'], manifest='rev-manifest.json')
+app.jinja_env.filters['asset_url'] = rev.asset_url
+
+flask_cache_control = FlaskCacheControl()
+flask_cache_control.init_app(app)
 
 sentry = Sentry(app, dsn=SENTRY_DSN)
-
-
-def after_this_request(f):
-    if not hasattr(g, 'after_request_callbacks'):
-        g.after_request_callbacks = []
-    g.after_request_callbacks.append(f)
-    return f
 
 
 @app.teardown_appcontext
@@ -44,12 +47,8 @@ def shutdown_session(exception=None):
 
 
 @app.route('/', methods=['GET'])
+@dont_cache()
 def homepage():
-    @after_this_request
-    def add_header(response):
-        response.cache_control.no_store = True
-        return response
-
     if UNMAINTAINED:
         return render_template('homepage_unmaintained.html')
 
@@ -59,6 +58,7 @@ def homepage():
 
 
 @app.route('/favicon.ico')
+@cache(max_age=3600, public=True)
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/favicon'),
                                'favicon.ico',
@@ -66,6 +66,7 @@ def favicon():
 
 
 @app.route('/alert', methods=['GET'])
+@dont_cache()
 def show_alert():
     klass_ids = request.args.get('classids', '')
     courses = []
@@ -80,15 +81,11 @@ def show_alert():
             Klass.klass_id.in_(klass_ids)).all()
         courses = klasses_to_template_courses(klasses)
 
-    @after_this_request
-    def add_header(response):
-        response.cache_control.no_store = True
-        return response
-
     return render_template('alert.html', courses=courses)
 
 
 @app.route('/api/alerts', methods=['POST'])
+@dont_cache()
 def save_alerts():
     # get info from the form
     # if something is invalid or they haven't given a contact or chosen classes
@@ -151,6 +148,7 @@ def save_alerts():
 
 
 @app.route('/api/courses', methods=['GET'])
+@dont_cache()
 def search_courses():
     search_query = '%' + request.args.get('q', '') + '%'
     courses = db_session\
@@ -164,6 +162,7 @@ def search_courses():
 
 
 @app.route('/api/courses/<course_id>', methods=['GET'])
+@dont_cache()
 def course_info(course_id):
     course_id = course_id.upper()
     dept_id, course_id = validate_course_id(course_id)
@@ -173,21 +172,10 @@ def course_info(course_id):
 
 
 @app.route('/api/validateyoname', methods=['GET'])
+@dont_cache()
 def validate_yo_name():
     yo_name = request.args.get('yoname', '')
     return json.dumps({'exists': is_valid_yo_name(yo_name)})
-
-
-@app.after_request
-def call_after_request_callbacks(response):
-    for callback in getattr(g, 'after_request_callbacks', ()):
-        callback(response)
-
-    if not response.cache_control:
-        response.cache_control.public = True
-        response.cache_control.max_age = 1800
-
-    return response
 
 
 if __name__ == '__main__':

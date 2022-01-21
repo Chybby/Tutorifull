@@ -1,5 +1,3 @@
-from __future__ import absolute_import, print_function
-
 POSTGRES_MAX_INT = 2147483647
 
 # class statuses

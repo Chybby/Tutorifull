@@ -1,5 +1,3 @@
-from __future__ import absolute_import, print_function
-
 import json
 from collections import defaultdict
 from email.mime.multipart import MIMEMultipart

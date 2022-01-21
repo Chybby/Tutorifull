@@ -1,5 +1,3 @@
-from __future__ import absolute_import, print_function
-
 from constants import STATUS_OPEN
 from dbhelper import Base
 from sqlalchemy import Column, ForeignKey, ForeignKeyConstraint, Integer, String

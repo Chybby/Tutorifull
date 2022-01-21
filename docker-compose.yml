@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  tutorifull:
+    image: tutorifull
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    networks:
+      - tutorifull-internal
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    networks:
+      - tutorifull-internal
+
+networks:
+  tutorifull-internal:
